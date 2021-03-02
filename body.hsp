@@ -5,7 +5,7 @@ randomize
 #const windowSize 480 * windowMulti / 100
 #module
 #defcfunc pow int x, int y
-	let ans : ans = 1
+	dim ans : ans = 1
 	repeat y : ans = ans * x : loop
 	return ans
 #global
