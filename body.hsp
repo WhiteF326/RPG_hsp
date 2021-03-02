@@ -5,27 +5,27 @@ randomize
 #const windowSize 480 * windowMulti / 100
 #module
 #defcfunc pow int x, int y
-	int ans : ans = 1
+	let ans : ans = 1
 	repeat y : ans = ans * x : loop
 	return ans
 #global
 
 *init
-	;ƒ}ƒbƒvƒ`ƒbƒv‚Ì—pˆÓ
+	;ï¿½}ï¿½bï¿½vï¿½`ï¿½bï¿½vï¿½Ì—pï¿½ï¿½
 	buffer 32
 	picload "Chips/MapChip.png", 32
 
-	;ƒƒCƒ“ƒXƒNƒŠ[ƒ“
+	;ï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½Xï¿½Nï¿½ï¿½ï¿½[ï¿½ï¿½
 	screen 0, windowSize, windowSize, 0
 
-	;ƒ}ƒbƒv•Ï”
+	;ï¿½}ï¿½bï¿½vï¿½Ïï¿½
 	dim mSize : mSize = 24
 	dim frq : frq = 8
 	dim chipSize : chipSize = windowSize / mSize
 	dim map, mSize, mSize, 2
 	sdim buf, 32000
 	notesel buf : noteload "Elements/ChipPoint.txt"
-	dim mapPoints, 2, notemax / 2			;2‚ÅŠ„‚èØ‚ê‚È‚¢ê‡‚ÍƒGƒ‰[‚ğ“f‚­
+	dim mapPoints, 2, notemax / 2			;2ï¿½ÅŠï¿½ï¿½ï¿½Ø‚ï¿½È‚ï¿½ï¿½ê‡ï¿½ÍƒGï¿½ï¿½ï¿½[ï¿½ï¿½fï¿½ï¿½
 	repeat notemax
 		sdim t, 16 : noteget t, cnt
 		mapPoints(cnt \ 2, cnt / 2) = int(t)
