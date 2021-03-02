@@ -3,22 +3,29 @@
 randomize
 #const windowMulti 125
 #const windowSize 480 * windowMulti / 100
+#module
+#defcfunc pow int x, int y
+	dim ans : ans = 1
+	repeat y : ans = ans * x : loop
+	return ans
+#global
 
 *init
-	;ƒ}ƒbƒvƒ`ƒbƒv‚Ì—pˆÓ
+	;ãƒãƒƒãƒ—ãƒãƒƒãƒ—èª­ã¿è¾¼ã¿
 	buffer 32
 	picload "Chips/MapChip.png", 32
 
-	;ƒƒCƒ“ƒXƒNƒŠ[ƒ“
+	;ãƒ¡ã‚¤ãƒ³ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦èª­ã¿è¾¼ã¿
 	screen 0, windowSize, windowSize, 0
 
-	;ƒ}ƒbƒv•Ï”
+	;ãƒãƒƒãƒ—å¤‰æ•°ç”¨æ„
 	dim mSize : mSize = 24
+	dim frq : frq = 8
 	dim chipSize : chipSize = windowSize / mSize
 	dim map, mSize, mSize, 2
 	sdim buf, 32000
 	notesel buf : noteload "Elements/ChipPoint.txt"
-	dim mapPoints, 2, notemax / 2			;2‚ÅŠ„‚èØ‚ê‚È‚¢ê‡‚ÍƒGƒ‰[‚ğ“f‚­
+	dim mapPoints, 2, notemax / 2			;todo 2ã§å‰²ã‚Šåˆ‡ã‚Œãªã„æ™‚ã®å¯¾ç­–
 	repeat notemax
 		sdim t, 16 : noteget t, cnt
 		mapPoints(cnt \ 2, cnt / 2) = int(t)
@@ -30,7 +37,7 @@ randomize
 	stop
 
 *mapGenerate
-	
+	dim rooms, pow((mSize / frq), 2), 4
 	return
 
 *mapPaint
