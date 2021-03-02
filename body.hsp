@@ -1,0 +1,53 @@
+;#const giX 10
+;#const giY 11
+randomize
+#const windowMulti 125
+#const windowSize 480 * windowMulti / 100
+#module
+#defcfunc pow int x, int y
+	int ans : ans = 1
+	repeat y : ans = ans * x : loop
+	return ans
+#global
+
+*init
+	;マップチップの用意
+	buffer 32
+	picload "Chips/MapChip.png", 32
+
+	;メインスクリーン
+	screen 0, windowSize, windowSize, 0
+
+	;マップ変数
+	dim mSize : mSize = 24
+	dim frq : frq = 8
+	dim chipSize : chipSize = windowSize / mSize
+	dim map, mSize, mSize, 2
+	sdim buf, 32000
+	notesel buf : noteload "Elements/ChipPoint.txt"
+	dim mapPoints, 2, notemax / 2			;2で割り切れない場合はエラーを吐く
+	repeat notemax
+		sdim t, 16 : noteget t, cnt
+		mapPoints(cnt \ 2, cnt / 2) = int(t)
+	loop
+	
+*main
+	gosub *mapGenerate
+	gosub *mapPaint
+	stop
+
+*mapGenerate
+	dim rooms, pow((mSize / frq), 2), 4
+	return
+
+*mapPaint
+	repeat mSize
+		x = cnt
+		repeat mSize
+			pos x * chipSize, cnt * chipSize
+			if(map(x, cnt, 0) >= 0){
+				gzoom chipSize, chipSize, 32, map(x, cnt, 0) * 16, map(x, cnt, 1) * 16, 16, 16
+			}
+		loop
+	loop
+	return

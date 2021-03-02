@@ -1,0 +1,12 @@
+#module
+#defcfunc ussee int x
+	if x <= 0{
+		return "‚í"
+	}
+	return "‚¤‚Á‚¹‚¦" + ussee(x-1);
+#global
+
+*main
+	mes "‚Í‚ŸH"
+	mes	ussee(100)
+	stop
