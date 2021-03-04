@@ -97,7 +97,7 @@ randomize
 		x = cnt
 		repeat mSize
 			pos x * chipSize, cnt * chipSize
-			gzoom chipSize, chipSize, 32, mapPoints(map(x, cnt), 0) * 16, mapPoints(map(x, cnt), 1) * 16, 16, 16
+			gzoom chipSize, chipSize, 32, mapPoints(0, map(x, cnt)) * 16, mapPoints(1, map(x, cnt)) * 16, 16, 16
 		loop
 	loop
 	return
