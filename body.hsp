@@ -116,6 +116,7 @@ randomize
 		loop
 	loop
 	//c_Posì¬
+	dim c_Pos, nAAcnt, frq
 	return
 
 *mapPaint
