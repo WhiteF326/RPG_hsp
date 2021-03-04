@@ -11,21 +11,21 @@ randomize
 #global
 
 *init
-	;ãƒžãƒƒãƒ—ãƒãƒƒãƒ—èª­ã¿è¾¼ã¿
+	;ƒ}ƒbƒvƒ`ƒbƒv“Ç‚Ýž‚Ý
 	buffer 32
 	picload "Chips/MapChip.png", 32
 
-	;ãƒ¡ã‚¤ãƒ³ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦èª­ã¿è¾¼ã¿
+	;ƒƒCƒ“ƒEƒBƒ“ƒhƒE“Ç‚Ýž‚Ý
 	screen 0, windowSize, windowSize, 0
 
-	;ãƒžãƒƒãƒ—å¤‰æ•°ç”¨æ„
+	;ƒ}ƒbƒv•Ï”—pˆÓ
 	dim mSize : mSize = 24
 	dim frq : frq = 8
 	dim chipSize : chipSize = windowSize / mSize
-	dim map, mSize, mSize, 2
+	dim map, mSize, mSize
 	sdim buf, 32000
 	notesel buf : noteload "Elements/ChipPoint.txt"
-	dim mapPoints, 2, notemax / 2			;todo 2ã§å‰²ã‚Šåˆ‡ã‚Œãªã„æ™‚ã®å¯¾ç­–
+	dim mapPoints, 2, notemax / 2			;todo 2‚ÅŠ„‚èØ‚ê‚È‚¢Žž‚Ì‘Îô
 	repeat notemax
 		sdim t, 16 : noteget t, cnt
 		mapPoints(cnt \ 2, cnt / 2) = int(t)
@@ -37,7 +37,56 @@ randomize
 	stop
 
 *mapGenerate
+	dim XM : XM = mSize / frq
+	dim YM : YM = mSize / frq
 	dim rooms, pow((mSize / frq), 2), 4
+	dim floorCount : dim floors, pow(24, 2), 2
+	dim adj, 9, 2
+	repeat XM
+		x = cnt
+		repeat YM
+			rNum = x * XM + cnt
+			if y + 1 ! YM : adj(rNum, 0) = rNum + 1 : else : adj(rNum, 0) = -1
+			if x + 1 ! XM : adj(rNum, 1) = rNum + XM : else : adj(rNum, 1) = -1
+		loop
+	loop
+	repeat XM
+		xr = cnt
+		repeat YM
+			yr = cnt
+			dim xrm : dim yrm
+			if xr + 1 = XM{
+				xrm = mSize - ((XM - 1) * frq)
+			}else{
+				xrm = frq
+			}
+			if yr + 1 = YM{
+				yrm = mSize - ((YM - 1) * frq)
+			}else{
+				yrm = frq
+			}
+			dim xs : xs = rnd(xrm) + 1
+			dim ys : ys = rnd(yrm) + 1
+			if(xs == xrm) : xp = 0 : else : xp = rnd(xrm - xs)
+			if(ys == yrm) : yp = 0 : else : yp = rnd(yrm - ys)
+			repeat xs
+				x = cnt
+				repeat ys
+					y = cnt
+					map(x + xp + xr * frq, y + yp + yr * frq) = 1
+					if (xs > 1) && (ys > 1){
+						floors(floorCount, 0) = x + xp + xr * frq
+						floors(floorCount, 1) = y + yp + yr * frq
+						floorCount++
+					}
+				loop
+			loop
+			rooms(xr * XM + yr, 0) = xr * frq + xp
+			rooms(xr * XM + yr, 1) = yr * frq + yp
+			rooms(xr * XM + yr, 2) = xr * frq + xp + xs
+			rooms(xr * XM + yr, 3) = yr * frq + yp + ys
+		loop
+	loop
 	return
 
 *mapPaint
@@ -45,9 +94,7 @@ randomize
 		x = cnt
 		repeat mSize
 			pos x * chipSize, cnt * chipSize
-			if(map(x, cnt, 0) >= 0){
-				gzoom chipSize, chipSize, 32, map(x, cnt, 0) * 16, map(x, cnt, 1) * 16, 16, 16
-			}
+			gzoom chipSize, chipSize, 32, mapPoints(map(x, cnt), 0) * 16, mapPoints(map(x, cnt), 1) * 16, 16, 16
 		loop
 	loop
 	return
