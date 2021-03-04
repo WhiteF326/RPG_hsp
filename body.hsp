@@ -95,15 +95,15 @@ randomize
 		repeat 2
 			dim retEx : dim locked_x : dim locked_y
 			if adj(i, cnt) ! -1{
-				if v = 0 {
+				if cnt = 0 {
 					locked_y = rooms(i, 3)
 					for x, rooms(i, 0), rooms(i, 2), 1
-						retEx += stage(x, locked_y)
+						retEx += map(x, locked_y)
 					next
 				}else{
 					locked_x = rooms(i, 2)
 					for y, rooms(i, 1), rooms(i, 3), 1
-						retEx += stage(locked_x, y)
+						retEx += map(locked_x, y)
 					next
 				}
 				if retEx = 0{
