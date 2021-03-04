@@ -87,6 +87,9 @@ randomize
 			rooms(xr * XM + yr, 3) = yr * frq + yp + ys
 		loop
 	loop
+	//階段を配置
+	//通路生成
+	
 	return
 
 *mapPaint
