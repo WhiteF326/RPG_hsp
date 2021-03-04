@@ -87,6 +87,8 @@ randomize
 			rooms(xr * XM + yr, 3) = yr * frq + yp + ys
 		loop
 	loop
+	//ŠK’i‚ğ”z’u
+	//’Ê˜H¶¬
 	return
 
 *mapPaint
