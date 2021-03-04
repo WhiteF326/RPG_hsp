@@ -89,7 +89,7 @@ randomize
 	loop
 	//ŠK’i‚ğ”z’u
 	//’Ê˜H¶¬
-	dim notAdjArr, 12, 3 : dim nAAcnt
+	dim notAdjArr, XM * YM * 2, 3 : dim nAAcnt
 	repeat XM * YM
 		i = cnt
 		repeat 2
