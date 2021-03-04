@@ -11,21 +11,21 @@ randomize
 #global
 
 *init
-	;ƒ}ƒbƒvƒ`ƒbƒv“Ç‚İ‚İ
+	;ãƒãƒƒãƒ—ãƒãƒƒãƒ—èª­ã¿è¾¼ã¿
 	buffer 32
 	picload "Chips/MapChip.png", 32
 
-	;ƒƒCƒ“ƒEƒBƒ“ƒhƒE“Ç‚İ‚İ
+	;ãƒ¡ã‚¤ãƒ³ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦èª­ã¿è¾¼ã¿
 	screen 0, windowSize, windowSize, 0
 
-	;ƒ}ƒbƒv•Ï”—pˆÓ
+	;ãƒãƒƒãƒ—å¤‰æ•°ç”¨æ„
 	dim mSize : mSize = 24
 	dim frq : frq = 8
 	dim chipSize : chipSize = windowSize / mSize
 	dim map, mSize, mSize
 	sdim buf, 32000
 	notesel buf : noteload "Elements/ChipPoint.txt"
-	dim mapPoints, 2, notemax / 2			;todo 2‚ÅŠ„‚èØ‚ê‚È‚¢‚Ì‘Îô
+	dim mapPoints, 2, notemax / 2			;todo 2ã§å‰²ã‚Šåˆ‡ã‚Œãªã„æ™‚ã®å¯¾ç­–
 	repeat notemax
 		sdim t, 16 : noteget t, cnt
 		mapPoints(cnt \ 2, cnt / 2) = int(t)
