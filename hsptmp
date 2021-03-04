@@ -89,7 +89,7 @@ randomize
 	loop
 	//階段を配置
 	//通路生成
-	dim notAdjArr, 12, 3 : dim nAAcnt
+	dim notAdjArr, XM * YM * 2, 3 : dim nAAcnt
 	repeat XM * YM
 		i = cnt
 		repeat 2
