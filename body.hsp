@@ -23,7 +23,7 @@ randomize
 
 	;マップ変数用意
 	dim mSize : mSize = 60
-	dim frq : frq = 15
+	dim frq : frq = 15				; mSize / frq > 3 && frq > 4
 	dim chipSize : chipSize = windowSize / mSize
 	dim map, mSize, mSize
 	sdim buf
@@ -138,7 +138,7 @@ randomize
 			if tmp = 1 : map(yDivPoint(select), cnt) = 1
 		loop
 	loop
-	
+
 	return
 
 *mapPaint
