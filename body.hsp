@@ -10,7 +10,7 @@ randomize
 		if(rndmax = 1) : return 1
 		dim ans
 		repeat rndmax - 1
-			if rnd(100) > 1 : ans++
+			if rnd(10) > 1 : ans++
 		loop
 		return ans
 #global
@@ -25,10 +25,10 @@ randomize
 
 	;マップ変数用意
 	dim mSize : mSize = 48
-	dim frq : frq = 2
+	dim frq : frq = 8
 	dim chipSize : chipSize = windowSize / mSize
 	dim map, mSize, mSize
-	sdim buf, 32000
+	sdim buf
 	notesel buf : noteload "Elements/ChipPoint.txt"
 	dim mapPoints, 2, notemax / 2			;todo 2で割り切れない時の対策
 	repeat notemax
@@ -43,59 +43,22 @@ randomize
 
 *mapGenerate
 	//縦と横にfrq回数仕切りを作成する
-	dim rTable, mSize - 2
-	repeat mSize - 2 : rTable(cnt) = cnt + 1 : loop
-
-	//ランダムソート
-	repeat mSize - 2
-		dim r : r = rnd(mSize - 2 - cnt)
-		dim tmp : tmp = rTable(r)
-		rTable(r) = rTable(mSize - cnt - 3)
-		rTable(mSize - cnt - 3) = tmp
-	loop
-
-	//仕切りの選択
 	dim xDivPoint, frq + 2 : dim yDivPoint, frq + 2
-	repeat frq
-		xDivPoint(cnt + 1) = rTable(cnt)
-		yDivPoint(cnt + 1) = rTable(mSize - cnt - 3)
-	loop
 	xDivPoint(frq + 1) = mSize : yDivPoint(frq + 1) = mSize
-
-	//仕切り位置のソート
-	if frq > 1{
-		//sorting xDivPoint
-		repeat frq
-			dim i : i = cnt
-			repeat frq - i
-				if xDivPoint(cnt) > xDivPoint(cnt + 1){
-					dim tmp : tmp = xDivPoint(cnt)
-					xDivPoint(cnt) = xDivPoint(cnt + 1)
-					xDivPoint(cnt + 1) = tmp
-				}
-			loop
-		loop
-		//sorting yDivPoint
-		repeat frq
-			dim i : i = cnt
-			repeat frq - i
-				if yDivPoint(cnt) > yDivPoint(cnt + 1){
-					dim tmp : tmp = yDivPoint(cnt)
-					yDivPoint(cnt) = yDivPoint(cnt + 1)
-					yDivPoint(cnt + 1) = tmp
-				}
-			loop
-		loop
-	}
+	repeat frq, 1
+		xDivPoint(cnt) = xDivPoint(cnt - 1) + bigrnd(frq - 3) + 2
+		if(xDivPoint(cnt) < 2) : xDivPoint(cnt) = 2
+		if(xDivPoint(cnt) > mSize - 2) : xDivPoint(cnt) = mSize - 2
+		yDivPoint(cnt) = yDivPoint(cnt - 1) + bigrnd(frq - 3) + 2
+		if(yDivPoint(cnt) < 2) : yDivPoint(cnt) = 2
+		if(yDivPoint(cnt) > mSize - 2) : yDivPoint(cnt) = mSize - 2
+	loop
 
 	//小部屋の生成
-	//直前の仕切りと比較して差が1の場合、自身は1つ正へ移動する
 	dim roomsInfo, int(pow(frq + 1, 2)), 4
 	repeat length(xDivPoint) - 1
-		if xDivPoint(cnt + 1) - xDivPoint(cnt) = 1 : xDivPoint(cnt + 1)++
 		dim xPtr : xPtr = cnt
 		repeat length(yDivPoint) - 1
-			if yDivPoint(cnt + 1) - yDivPoint(cnt) = 1 : yDivPoint(cnt + 1)++
 			dim targetRoom : targetRoom = xPtr * (frq + 1) + cnt
 			//左端と上端を決定する
 			if xDivPoint(xPtr + 1) - xDivPoint(xPtr) = 2 : roomsInfo(targetRoom, 0) = xDivPoint(xPtr) + 1 : else{
@@ -113,7 +76,6 @@ randomize
 			if roomsInfo(targetRoom, 1) = yDivPoint(cnt + 1) - 1 : roomsInfo(targetRoom, 3) = 1: else{
 				roomsInfo(targetRoom, 3) = bigrnd(yDivPoint(cnt + 1) - roomsInfo(targetRoom, 1)) + 1
 			}
-
 		loop
 	loop
 	//実際の埋め立て
@@ -128,10 +90,39 @@ randomize
 	loop
 
 	//通路の生成
-	repeat frq
+	repeat frq + 1
 		dim xRoot : xRoot = cnt
-		repeat frq
+		repeat frq + 1
+			dim yRoot : yRoot = cnt
+			targetRoom = xRoot * frq + yRoot
+			//上へ通路を作る
+			if (yRoot > 0) & (roomsInfo(targetRoom, 1) + roomsInfo(targetRoom, 3) > yDivPoint(yRoot)){
+				dim xRootPoint : xRootPoint = rnd(roomsInfo(targetRoom, 2)) + roomsInfo(targetRoom, 0)
+				repeat roomsInfo(targetRoom, 1) + roomsInfo(targetRoom, 3) - yDivPoint(yRoot)
+					map(xRootPoint, cnt + yDivPoint(yRoot)) = 1
+				loop
+			}
+			//左へ通路を作る
+			if (xRoot > 0) & (roomsInfo(targetRoom, 0) + roomsInfo(targetRoom, 2) > xDivPoint(xRoot)){
+				dim yRootPoint : yRootPoint = rnd(roomsInfo(targetRoom, 3)) + roomsInfo(targetRoom, 1)
+				repeat (roomsInfo(targetRoom, 0) + roomsInfo(targetRoom, 2)) - xDivPoint(xRoot)
+					map(cnt + xDivPoint(xRoot), yRootPoint) = 1
+				loop
+			}
 			//右へ通路を作る
+			if (targetRoom / (frq + 1) < frq) & (xDivPoint(xRoot + 1) > (roomsInfo(targetRoom, 0) + roomsInfo(targetRoom, 2))){
+				dim yRootPoint : yRootPoint = rnd(roomsInfo(targetRoom, 3)) + roomsInfo(targetRoom, 1)
+				repeat xDivPoint(xRoot + 1) - (roomsInfo(targetRoom, 0) + roomsInfo(targetRoom, 2))
+					map(cnt + roomsInfo(targetRoom, 0) + roomsInfo(targetRoom, 2), yRootPoint) = 1
+				loop
+			}
+			//下へ通路を作る
+			if (targetRoom \ (frq + 1) < frq) & (yDivPoint(yRoot + 1) > (roomsInfo(targetRoom, 1) + roomsInfo(targetRoom, 3))){
+				dim xRootPoint : xRootPoint = rnd(roomsInfo(targetRoom, 2)) + roomsInfo(targetRoom, 0)
+				repeat yDivPoint(yRoot + 1) - (roomsInfo(targetRoom, 1) + roomsInfo(targetRoom, 3))
+					map(xRootPoint, cnt + roomsInfo(targetRoom, 1) + roomsInfo(targetRoom, 3)) = 1
+				loop
+			}
 		loop
 	loop
 
