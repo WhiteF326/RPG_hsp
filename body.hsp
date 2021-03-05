@@ -1,16 +1,14 @@
-;#const giX 10
-;#const giY 11
 randomize
 #include "hspmath.as"
 #const windowMulti 125
 #const windowSize 480 * windowMulti / 100
 #module
 	; 結果が大きくなりやすいイカサマ乱数
-	#defcfunc bigrnd int rndmax
+	#defcfunc bigrnd int rndmax, int qCof
 		if(rndmax = 1) : return 1
 		dim ans
 		repeat rndmax - 1
-			if rnd(10) > 1 : ans++
+			if rnd(qCof) > 1 : ans++
 		loop
 		return ans
 #global
@@ -24,15 +22,15 @@ randomize
 	screen 0, windowSize, windowSize, 0
 
 	;マップ変数用意
-	dim mSize : mSize = 48
-	dim frq : frq = 8
+	dim mSize : mSize = 60
+	dim frq : frq = 15
 	dim chipSize : chipSize = windowSize / mSize
 	dim map, mSize, mSize
 	sdim buf
 	notesel buf : noteload "Elements/ChipPoint.txt"
 	dim mapPoints, 2, notemax / 2			;todo 2で割り切れない時の対策
 	repeat notemax
-		sdim t, 16 : noteget t, cnt
+		sdim t : noteget t, cnt
 		mapPoints(cnt \ 2, cnt / 2) = int(t)
 	loop
 
@@ -46,10 +44,10 @@ randomize
 	dim xDivPoint, frq + 2 : dim yDivPoint, frq + 2
 	xDivPoint(frq + 1) = mSize : yDivPoint(frq + 1) = mSize
 	repeat frq, 1
-		xDivPoint(cnt) = xDivPoint(cnt - 1) + bigrnd(frq - 3) + 2
+		xDivPoint(cnt) = xDivPoint(cnt - 1) + bigrnd(mSize / frq - 1, 14) + 2
 		if(xDivPoint(cnt) < 2) : xDivPoint(cnt) = 2
 		if(xDivPoint(cnt) > mSize - 2) : xDivPoint(cnt) = mSize - 2
-		yDivPoint(cnt) = yDivPoint(cnt - 1) + bigrnd(frq - 3) + 2
+		yDivPoint(cnt) = yDivPoint(cnt - 1) + bigrnd(mSize / frq - 1, 14) + 2
 		if(yDivPoint(cnt) < 2) : yDivPoint(cnt) = 2
 		if(yDivPoint(cnt) > mSize - 2) : yDivPoint(cnt) = mSize - 2
 	loop
@@ -71,10 +69,10 @@ randomize
 			;roomsInfo(targetRoom, 1) = rnd(yDivPoint(cnt + 1) - yDivPoint(cnt) - 2) + yDivPoint(cnt) + 1
 			//右端と下端を決定する
 			if roomsInfo(targetRoom, 0) = xDivPoint(xPtr + 1) - 1 : roomsInfo(targetRoom, 2) = 1: else{
-				roomsInfo(targetRoom, 2) = bigrnd(xDivPoint(xPtr + 1) - roomsInfo(targetRoom, 0)) + 1
+				roomsInfo(targetRoom, 2) = bigrnd(xDivPoint(xPtr + 1) - roomsInfo(targetRoom, 0), 10) + 1
 			}
 			if roomsInfo(targetRoom, 1) = yDivPoint(cnt + 1) - 1 : roomsInfo(targetRoom, 3) = 1: else{
-				roomsInfo(targetRoom, 3) = bigrnd(yDivPoint(cnt + 1) - roomsInfo(targetRoom, 1)) + 1
+				roomsInfo(targetRoom, 3) = bigrnd(yDivPoint(cnt + 1) - roomsInfo(targetRoom, 1), 10) + 1
 			}
 		loop
 	loop
@@ -127,8 +125,20 @@ randomize
 	loop
 
 	//仕切り部で通路を繋ぐ
-
-	//完成
+	repeat frq, 1
+		dim select : select = cnt
+		dim tmp : tmp = 0
+		repeat mSize
+			if map(cnt, xDivPoint(select)) = 1 : tmp = (tmp + 1) \ 2
+			if tmp = 1 : map(cnt, xDivPoint(select)) = 1
+		loop
+		tmp = 0
+		repeat mSize
+			if map(yDivPoint(select), cnt) = 1 : tmp = (tmp + 1) \ 2
+			if tmp = 1 : map(yDivPoint(select), cnt) = 1
+		loop
+	loop
+	
 	return
 
 *mapPaint
