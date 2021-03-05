@@ -1,13 +1,18 @@
 ;#const giX 10
 ;#const giY 11
 randomize
+#include "hspmath.as"
 #const windowMulti 125
 #const windowSize 480 * windowMulti / 100
 #module
-#defcfunc pow int x, int y
-	dim ans : ans = 1
-	repeat y : ans = ans * x : loop
-	return ans
+	; 結果が大きくなりやすいイカサマ乱数
+	#defcfunc bigrnd int rndmax
+		if(rndmax = 1) : return 1
+		dim ans
+		repeat rndmax - 1
+			if rnd(100) > 1 : ans++
+		loop
+		return ans
 #global
 
 *init
@@ -19,7 +24,7 @@ randomize
 	screen 0, windowSize, windowSize, 0
 
 	;マップ変数用意
-	dim mSize : mSize = 24
+	dim mSize : mSize = 48
 	dim frq : frq = 2
 	dim chipSize : chipSize = windowSize / mSize
 	dim map, mSize, mSize
@@ -38,30 +43,31 @@ randomize
 
 *mapGenerate
 	//縦と横にfrq回数仕切りを作成する
-	dim rTable, mSize
-	repeat mSize : rTable(cnt) = cnt : loop
+	dim rTable, mSize - 2
+	repeat mSize - 2 : rTable(cnt) = cnt + 1 : loop
 
 	//ランダムソート
-	repeat mSize
-		dim r : r = rnd(mSize - cnt)
+	repeat mSize - 2
+		dim r : r = rnd(mSize - 2 - cnt)
 		dim tmp : tmp = rTable(r)
-		rTable(r) = rTable(mSize - cnt - 1)
-		rTable(mSize - cnt - 1) = tmp
+		rTable(r) = rTable(mSize - cnt - 3)
+		rTable(mSize - cnt - 3) = tmp
 	loop
 
 	//仕切りの選択
-	dim xDivPoint, frq : dim yDivPoint, frq
+	dim xDivPoint, frq + 2 : dim yDivPoint, frq + 2
 	repeat frq
-		xDivPoint(cnt) = rTable(cnt)
-		yDivPoint(cnt) = rTable(mSize - cnt - 1)
+		xDivPoint(cnt + 1) = rTable(cnt)
+		yDivPoint(cnt + 1) = rTable(mSize - cnt - 3)
 	loop
+	xDivPoint(frq + 1) = mSize : yDivPoint(frq + 1) = mSize
 
 	//仕切り位置のソート
 	if frq > 1{
 		//sorting xDivPoint
-		repeat frq - 1
+		repeat frq
 			dim i : i = cnt
-			repeat frq - i - 1
+			repeat frq - i
 				if xDivPoint(cnt) > xDivPoint(cnt + 1){
 					dim tmp : tmp = xDivPoint(cnt)
 					xDivPoint(cnt) = xDivPoint(cnt + 1)
@@ -70,9 +76,9 @@ randomize
 			loop
 		loop
 		//sorting yDivPoint
-		repeat frq - 1
+		repeat frq
 			dim i : i = cnt
-			repeat frq - i - 1
+			repeat frq - i
 				if yDivPoint(cnt) > yDivPoint(cnt + 1){
 					dim tmp : tmp = yDivPoint(cnt)
 					yDivPoint(cnt) = yDivPoint(cnt + 1)
@@ -83,8 +89,51 @@ randomize
 	}
 
 	//小部屋の生成
+	//直前の仕切りと比較して差が1の場合、自身は1つ正へ移動する
+	dim roomsInfo, int(pow(frq + 1, 2)), 4
+	repeat length(xDivPoint) - 1
+		if xDivPoint(cnt + 1) - xDivPoint(cnt) = 1 : xDivPoint(cnt + 1)++
+		dim xPtr : xPtr = cnt
+		repeat length(yDivPoint) - 1
+			if yDivPoint(cnt + 1) - yDivPoint(cnt) = 1 : yDivPoint(cnt + 1)++
+			dim targetRoom : targetRoom = xPtr * (frq + 1) + cnt
+			//左端と上端を決定する
+			if xDivPoint(xPtr + 1) - xDivPoint(xPtr) = 2 : roomsInfo(targetRoom, 0) = xDivPoint(xPtr) + 1 : else{
+				roomsInfo(targetRoom, 0) = rnd(xDivPoint(xPtr + 1) - xDivPoint(xPtr) - 2) + xDivPoint(xPtr) + 1
+			}
+			;roomsInfo(targetRoom, 0) = rnd(xDivPoint(xPtr + 1) - xDivPoint(xPtr) - 2) + xDivPoint(xPtr) + 1
+			if yDivPoint(cnt + 1) - yDivPoint(cnt) = 2 : roomsInfo(targetRoom, 2) = yDivPoint(cnt) + 1 : else{
+				roomsInfo(targetRoom, 1) = rnd(yDivPoint(cnt + 1) - yDivPoint(cnt) - 2) + yDivPoint(cnt) + 1
+			}
+			;roomsInfo(targetRoom, 1) = rnd(yDivPoint(cnt + 1) - yDivPoint(cnt) - 2) + yDivPoint(cnt) + 1
+			//右端と下端を決定する
+			if roomsInfo(targetRoom, 0) = xDivPoint(xPtr + 1) - 1 : roomsInfo(targetRoom, 2) = 1: else{
+				roomsInfo(targetRoom, 2) = bigrnd(xDivPoint(xPtr + 1) - roomsInfo(targetRoom, 0)) + 1
+			}
+			if roomsInfo(targetRoom, 1) = yDivPoint(cnt + 1) - 1 : roomsInfo(targetRoom, 3) = 1: else{
+				roomsInfo(targetRoom, 3) = bigrnd(yDivPoint(cnt + 1) - roomsInfo(targetRoom, 1)) + 1
+			}
 
-	//仕切りへと通路の生成
+		loop
+	loop
+	//実際の埋め立て
+	repeat length(roomsInfo)
+		targetRoom = cnt
+		repeat roomsInfo(targetRoom, 2)
+			dim x : x = cnt
+			repeat roomsInfo(targetRoom, 3)
+				map(x + roomsInfo(targetRoom, 0), cnt + roomsInfo(targetRoom, 1)) = 1
+			loop
+		loop
+	loop
+
+	//通路の生成
+	repeat frq
+		dim xRoot : xRoot = cnt
+		repeat frq
+			//右へ通路を作る
+		loop
+	loop
 
 	//仕切り部で通路を繋ぐ
 
