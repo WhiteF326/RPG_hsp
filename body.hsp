@@ -20,7 +20,7 @@ randomize
 
 	;マップ変数用意
 	dim mSize : mSize = 24
-	dim frq : frq = 1
+	dim frq : frq = 9
 	dim chipSize : chipSize = windowSize / mSize
 	dim map, mSize, mSize
 	sdim buf, 32000
@@ -57,7 +57,12 @@ randomize
 	loop
 
 	//仕切り位置のソート
-	
+	if frq > 1{
+		//sorting xDivPoint
+		
+		//sorting yDivPoint
+
+	}
 
 	//小部屋の生成
 
