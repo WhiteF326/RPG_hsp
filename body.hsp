@@ -1,6 +1,6 @@
 randomize
 #include "hspmath.as"
-#const windowMulti 125
+#const windowMulti 150
 #const windowSize 480 * windowMulti / 100
 #module
 	; 結果が大きくなりやすいイカサマ乱数
@@ -22,8 +22,8 @@ randomize
 	screen 0, windowSize, windowSize, 0
 
 	;マップ変数用意
-	dim mSize : mSize = 60
-	dim frq : frq = 15				; mSize / frq > 3 && frq > 4
+	dim mSize : mSize = 24
+	dim frq : frq = 4				; mSize / frq > 3 && frq > 4
 	dim chipSize : chipSize = windowSize / mSize
 	dim map, mSize, mSize
 	sdim buf
@@ -34,9 +34,47 @@ randomize
 		mapPoints(cnt \ 2, cnt / 2) = int(t)
 	loop
 
+	;プレイヤー変数用意
+	dim playerX
+	dim playerY
+
+	;マップチップ変数
+	noteload "Chara/Order.txt"
+	dim charCnt : charCnt = notemax
+	repeat notemax, 1
+		screen cnt
+		sdim fn : noteget fn, cnt - 1
+		celload "Chara/" + fn, cnt
+		celdiv cnt, 20, 20
+	loop
+
+	;マップその他宣言
+	buffer 6, windowSize, windowSize, 0
+
+	;アニメーション番号取得
+	notesel buf : noteload "Chara/AnimList.csv"
+	sdim anim, 16, 8, 4
+	repeat 8
+		sdim fn : noteget fn, cnt
+		split fn, ",", anim(cnt, 0), anim(cnt, 1), anim(cnt, 2), anim(cnt, 3)
+	loop
+
+	;アニメーションその他宣言
+	dim pAnimNo : pAnimNo = 0
+	buffer 5, windowSize, windowSize, 0 : cls 4
+	gsel 0
+
 *main
 	gosub *mapGenerate
 	gosub *mapPaint
+
+	repeat -1
+		gosub *playerPrint
+		gosub *allPrint
+
+		wait 10
+		pAnimNo = (pAnimNo + 1) \ 4
+	loop
 	stop
 
 *mapGenerate
@@ -139,10 +177,18 @@ randomize
 		loop
 	loop
 
+	//自分の出現位置を設定する
+	repeat -1
+		playerX = rnd(mSize)
+		playerY = rnd(mSize)
+		if map(playerX, playerY) = 1 : break
+	loop
+
 	return
 
 *mapPaint
-	gsel 0
+	gsel 6
+	gmode 2
 	repeat mSize
 		x = cnt
 		repeat mSize
@@ -150,4 +196,21 @@ randomize
 			gzoom chipSize, chipSize, 32, mapPoints(0, map(x, cnt)) * 16, mapPoints(1, map(x, cnt)) * 16, 16, 16
 		loop
 	loop
+	return
+
+*playerPrint
+	//一時的に下向きだけ
+	gsel 5
+	color 0, 0, 0 : boxf
+	dim charVector : charVector = 4
+	pos chipSize * playerX, chipSize * playerY
+	celput 1, int(anim(charVector, pAnimNo)), double(chipSize) / double(20), double(chipSize) / double(20)
+	return
+
+*allPrint
+	redraw 0
+	gsel 0 : gmode 2
+	pos 0, 0 : gcopy 6, 0, 0, windowSize, windowSize
+	pos 0, 0 : gcopy 5, 0, 0, windowSize, windowSize
+	redraw 1
 	return
