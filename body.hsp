@@ -34,6 +34,13 @@ randomize
 		mapPoints(cnt \ 2, cnt / 2) = int(t)
 	loop
 
+	;マップ詳細描画用変数
+	noteload "Chips/floorVectors.txt"
+	sdim mapDetails, 16, 40
+	repeat 40
+		noteget mapDetails(cnt), cnt
+	loop
+
 *main
 	gosub *mapGenerate
 	gosub *mapPaint
@@ -138,7 +145,7 @@ randomize
 			if tmp = 1 : map(yDivPoint(select), cnt) = 1
 		loop
 	loop
-	
+
 	return
 
 *mapPaint
