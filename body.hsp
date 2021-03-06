@@ -48,6 +48,13 @@ randomize
 		celdiv cnt, 20, 20
 	loop
 
+	;マップ詳細描画用変数
+	noteload "Chips/floorVectors.txt"
+	sdim mapDetails, 16, 40
+	repeat 40
+		noteload mapDetails(cnt), cnt
+	loop
+
 	;マップその他宣言
 	buffer 6, windowSize, windowSize, 0
 
