@@ -52,7 +52,7 @@ randomize
 	noteload "Chips/floorVectors.txt"
 	sdim mapDetails, 16, 40
 	repeat 40
-		noteload mapDetails(cnt), cnt
+		noteget mapDetails(cnt), cnt
 	loop
 
 	;ƒ}ƒbƒv‚»‚Ì‘¼éŒ¾
