@@ -23,7 +23,7 @@ randomize
 
 	;マップ変数用意
 	dim mSize : mSize = 60
-	dim frq : frq = 15				; mSize / frq > 3 && frq > 4
+	dim frq : frq = 5				; mSize / frq > 3 && frq > 4
 	dim chipSize : chipSize = windowSize / mSize
 	dim map, mSize, mSize
 	sdim buf
@@ -37,6 +37,7 @@ randomize
 *main
 	gosub *mapGenerate
 	gosub *mapPaint
+	gosub *playerPrint
 	stop
 
 *mapGenerate
@@ -150,4 +151,8 @@ randomize
 			gzoom chipSize, chipSize, 32, mapPoints(0, map(x, cnt)) * 16, mapPoints(1, map(x, cnt)) * 16, 16, 16
 		loop
 	loop
+	return
+
+*playerPrint
+	
 	return
