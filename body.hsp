@@ -21,6 +21,18 @@ randomize
 	;メインウィンドウ読み込み
 	screen 0, windowSize, windowSize, 0
 
+	;汎用変数
+	dim allVector, 8, 2					;上下左右斜め8方向のベクトル x,y
+	allVector(0, 0) = -1 : allVector(0, 1) = -1
+	allVector(1, 0) = 0 : allVector(1, 1) = -1
+	allVector(2, 0) = 1 : allVector(2, 1) = -1
+	allVector(3, 0) = -1 : allVector(3, 1) = 0
+	allVector(4, 0) = 1 : allVector(4, 1) = 0
+	allVector(5, 0) = -1 : allVector(5, 1) = 1
+	allVector(6, 0) = 0 : allVector(6, 1) = 1
+	allVector(7, 0) = 1 : allVector(7, 1) = 1
+
+
 	;マップ変数用意
 	dim mSize : mSize = 24
 	dim frq : frq = 4				; mSize / frq > 3 && frq > 4
@@ -28,10 +40,10 @@ randomize
 	dim map, mSize, mSize
 	sdim buf
 	notesel buf : noteload "Chips/ChipPoint.txt"
-	dim mapPoints, 2, notemax / 2			;todo 2で割り切れない時の対策
+	dim mapPoints, notemax
 	repeat notemax
 		sdim t : noteget t, cnt
-		mapPoints(cnt \ 2, cnt / 2) = int(t)
+		mapPoints(cnt) = int(t)
 	loop
 
 	;プレイヤー変数用意
@@ -199,8 +211,24 @@ randomize
 	repeat mSize
 		x = cnt
 		repeat mSize
-			pos x * chipSize, cnt * chipSize
-			gzoom chipSize, chipSize, 32, mapPoints(0, map(x, cnt)) * 16, mapPoints(1, map(x, cnt)) * 16, 16, 16
+			if(map(x, cnt) != 0){
+				pos x * chipSize, cnt * chipSize
+				dim chipNo : chipNo = mapPoints(map(x, cnt))
+				sdim checker, 16
+				repeat 8
+					if (x + allVector(cnt, 0) < 0) || (x + allVector(cnt, 0) >= mSize) || (cnt + allVector(cnt, 1) < 0) || (cnt + allVector(cnt, 1) >= mSize) {
+						checker += "1"
+					}else{
+						checker += str((map(x, cnt) + 1) \ 2)
+					}
+				loop
+				repeat 40
+					if checker = mapDetails(cnt){
+						chipNo += cnt : break
+					}
+				loop
+				gzoom chipSize, chipSize, 32, (chipNo \ 8) * 16, (chipNo / 8) * 16, 16, 16
+			}
 		loop
 	loop
 	return
