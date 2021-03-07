@@ -22,8 +22,8 @@ randomize
 	screen 0, windowSize, windowSize, 0
 
 	;マップ変数用意
-	dim mSize : mSize = 60
-	dim frq : frq = 15
+	dim mSize : mSize = 30
+	dim frq : frq = 5
 	dim chipSize : chipSize = windowSize / mSize
 	dim map, mSize, mSize
 	sdim buf
