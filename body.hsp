@@ -212,14 +212,15 @@ randomize
 		x = cnt
 		repeat mSize
 			if(map(x, cnt) != 0){
-				pos x * chipSize, cnt * chipSize
-				dim chipNo : chipNo = mapPoints(map(x, cnt))
+				y = cnt
+				pos x * chipSize, y * chipSize
+				dim chipNo : chipNo = mapPoints(map(x, y))
 				sdim checker, 16
 				repeat 8
-					if (x + allVector(cnt, 0) < 0) || (x + allVector(cnt, 0) >= mSize) || (cnt + allVector(cnt, 1) < 0) || (cnt + allVector(cnt, 1) >= mSize) {
+					if (x + allVector(cnt, 0) < 0) || (x + allVector(cnt, 0) >= mSize) || (y + allVector(cnt, 1) < 0) || (y + allVector(cnt, 1) >= mSize) {
 						checker += "1"
 					}else{
-						checker += str((map(x, cnt) + 1) \ 2)
+						checker += str((map(x + allVector(cnt, 0), y + allVector(cnt, 1)) + 1) \ 2)
 					}
 				loop
 				repeat 40
@@ -228,6 +229,7 @@ randomize
 					}
 				loop
 				gzoom chipSize, chipSize, 32, (chipNo \ 8) * 16, (chipNo / 8) * 16, 16, 16
+				wait 10
 			}
 		loop
 	loop
