@@ -27,7 +27,7 @@ randomize
 	dim chipSize : chipSize = windowSize / mSize
 	dim map, mSize, mSize
 	sdim buf
-	notesel buf : noteload "Elements/ChipPoint.txt"
+	notesel buf : noteload "Chips/ChipPoint.txt"
 	dim mapPoints, 2, notemax / 2			;todo 2‚ÅŠ„‚èØ‚ê‚È‚¢‚Ì‘Îô
 	repeat notemax
 		sdim t : noteget t, cnt
