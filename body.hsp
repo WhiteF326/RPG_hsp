@@ -229,7 +229,6 @@ randomize
 					}
 				loop
 				gzoom chipSize, chipSize, 32, (chipNo \ 8) * 16, (chipNo / 8) * 16, 16, 16
-				wait 10
 			}
 		loop
 	loop
