@@ -19,8 +19,8 @@ randomize
 	screen 0, windowSize, windowSize, 0
 
 	;マップ変数用意
-	dim mSize : mSize = 32
-	dim frq : frq = 4				; mSize / frq > 3 && frq > 4
+	dim mSize : mSize = 64
+	dim frq : frq = 8				; mSize / frq > 3 && frq > 4
 	dim chipSize : chipSize = windowSize / mSize
 	dim map, mSize, mSize
 
@@ -31,19 +31,21 @@ randomize
 	chips(0) = "."
 	chips(1) = "#"
 
+	;キャラ移動関連
+	dim moveInterval : moveInterval = 5
+
 	;finalize
 	gsel 0
 
 *main
 	gosub *mapGenerate
-	gosub *mapPaint
 
 	repeat -1
+		gosub *mapPaint
 		gosub *allPrint
-		gosub *keyHit
+		if cnt \ moveInterval = 0 : gosub *keyHit
 
-		wait 10
-		pAnimNo = (pAnimNo + 1) \ 4
+		wait 1
 	loop
 	stop
 
@@ -158,12 +160,18 @@ randomize
 
 *mapPaint
 	gsel 1
-	color 0, 0, 0 : boxf
+	color 0, 0, 0 : boxf : pos 0, 0
 	color 255, 255, 255
-	repeat mSize
-		x = cnt
+	repeat 40, 0
+		dim xCor : xCor = 0
+		//playerXから24を引いて0以上ならずらす
+		if playerX > 24 : xCor = playerX - 24
+		//補正が24以上になったら23にする
+		if xCor >= 24 : xCor = 24
+		x = cnt + xCor
+		pos 0, (cnt * ginfo_sy / 40)
 		sdim outstr
-		repeat mSize
+		repeat mSize, 0
 			if playerX = x & playerY = cnt{
 				mes outstr, 1
 				color 255, 0, 0
@@ -182,7 +190,7 @@ randomize
 	return
 
 *allPrint
-	gsel 0
+	gsel 0 : pos 0, 0
 	gmode 0 : gcopy 1, 0, 0, windowSize, windowSize
 	return
 
@@ -190,23 +198,24 @@ randomize
 	dim ky
 	dim moveVector, 2
 	stick ky, 15, 1
+	title str(playerX) + " " + str(playerY)
 	if ky & 1{
-		moveVector(0) += -1
-		moveVector(1) += 0
-	}
-	if ky & 2{
 		moveVector(0) += 0
 		moveVector(1) += -1
 	}
-	if ky & 4{
-		moveVector(0) += 1
+	if ky & 2{
+		moveVector(0) += -1
 		moveVector(1) += 0
 	}
-	if ky & 8{
+	if ky & 4{
 		moveVector(0) += 0
 		moveVector(1) += 1
 	}
-	if playerX + moveVector(0) >= 0 & playerX + moveVector(0) < mSize & playerY + moveVector(1) >= 0 & playerY + moveVector(1) < mSize {
+	if ky & 8{
+		moveVector(0) += 1
+		moveVector(1) += 0
+	}
+	if (playerX + moveVector(0) >= 0) & (playerX + moveVector(0) < mSize) & (playerY + moveVector(1) >= 0) & (playerY + moveVector(1) < mSize) {
 		if map(playerX + moveVector(0), playerY + moveVector(1)) = 1{
 			playerX += moveVector(0)
 			playerY += moveVector(1)
