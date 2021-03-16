@@ -14,86 +14,23 @@ randomize
 #global
 
 *init
-	;マップチップ読み込み
-	buffer 32
-	picload "Chips/MapChip.png", 32
-
-	;メインウィンドウ読み込み
-	screen 0, windowSize, windowSize, 0
-
-	;汎用変数
-	dim allVector, 8, 2					;上下左右斜め8方向のベクトル x,y
-	allVector(0, 0) = -1 : allVector(0, 1) = -1
-	allVector(1, 0) = 0 : allVector(1, 1) = -1
-	allVector(2, 0) = 1 : allVector(2, 1) = -1
-	allVector(3, 0) = -1 : allVector(3, 1) = 0
-	allVector(4, 0) = 1 : allVector(4, 1) = 0
-	allVector(5, 0) = -1 : allVector(5, 1) = 1
-	allVector(6, 0) = 0 : allVector(6, 1) = 1
-	allVector(7, 0) = 1 : allVector(7, 1) = 1
-
-
 	;マップ変数用意
 	dim mSize : mSize = 24
 	dim frq : frq = 4				; mSize / frq > 3 && frq > 4
 	dim chipSize : chipSize = windowSize / mSize
 	dim map, mSize, mSize
-	sdim buf
-	notesel buf : noteload "Chips/ChipPoint.txt"
-	dim mapPoints, notemax
-	repeat notemax
-		sdim t : noteget t, cnt
-		mapPoints(cnt) = int(t)
-	loop
-
-	;プレイヤー変数用意
-	dim playerX
-	dim playerY
-
-	;マップチップ変数
-	noteload "Chara/Order.txt"
-	dim charCnt : charCnt = notemax
-	repeat notemax, 1
-		screen cnt
-		sdim fn : noteget fn, cnt - 1
-		celload "Chara/" + fn, cnt
-		celdiv cnt, 20, 20
-	loop
-
-	;マップ詳細描画用変数
-	noteload "Chips/floorVectors.txt"
-	sdim mapDetails, 16, 40
-	repeat 40
-		noteget mapDetails(cnt), cnt
-	loop
-
-	;マップその他宣言
-	buffer 6, windowSize, windowSize, 0
-
-	;アニメーション番号取得
-	notesel buf : noteload "Chara/AnimList.csv"
-	sdim anim, 16, 8, 4
-	repeat 8
-		sdim fn : noteget fn, cnt
-		split fn, ",", anim(cnt, 0), anim(cnt, 1), anim(cnt, 2), anim(cnt, 3)
-	loop
-
-	;アニメーションその他宣言
-	dim pAnimNo : pAnimNo = 0
-	buffer 5, windowSize, windowSize, 0 : cls 4
-	gsel 0
 
 *main
 	gosub *mapGenerate
 	gosub *mapPaint
 
-	repeat -1
+	/* repeat -1
 		gosub *playerPrint
 		gosub *allPrint
 
 		wait 10
 		pAnimNo = (pAnimNo + 1) \ 4
-	loop
+	loop */
 	stop
 
 *mapGenerate
@@ -206,47 +143,5 @@ randomize
 	return
 
 *mapPaint
-	gsel 6
-	gmode 2
-	repeat mSize
-		x = cnt
-		repeat mSize
-			if(map(x, cnt) != 0){
-				y = cnt
-				pos x * chipSize, y * chipSize
-				dim chipNo : chipNo = mapPoints(map(x, y))
-				sdim checker, 16
-				repeat 8
-					if (x + allVector(cnt, 0) < 0) || (x + allVector(cnt, 0) >= mSize) || (y + allVector(cnt, 1) < 0) || (y + allVector(cnt, 1) >= mSize) {
-						checker += "1"
-					}else{
-						checker += str((map(x + allVector(cnt, 0), y + allVector(cnt, 1)) + 1) \ 2)
-					}
-				loop
-				repeat 40
-					if checker = mapDetails(cnt){
-						chipNo += cnt : break
-					}
-				loop
-				gzoom chipSize, chipSize, 32, (chipNo \ 8) * 16, (chipNo / 8) * 16, 16, 16
-			}
-		loop
-	loop
-	return
-
-*playerPrint
-	//一時的に下向きだけ
-	gsel 5
-	color 0, 0, 0 : boxf
-	dim charVector : charVector = 4
-	pos chipSize * playerX, chipSize * playerY
-	celput 1, int(anim(charVector, pAnimNo)), double(chipSize) / double(20), double(chipSize) / double(20)
-	return
-
-*allPrint
-	redraw 0
-	gsel 0 : gmode 2
-	pos 0, 0 : gcopy 6, 0, 0, windowSize, windowSize
-	pos 0, 0 : gcopy 5, 0, 0, windowSize, windowSize
-	redraw 1
+	
 	return
